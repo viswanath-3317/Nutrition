@@ -7,7 +7,7 @@ import os
 load_dotenv()
 
 # Get API key
-api_key = "AIzaSyDvG69-L_XIY8bQYni5191xzWrHiN9Q-nc"
+api_key = "GOOGLE_API_KEY"
 
 # Configure Gemini
 genai.configure(api_key=api_key)
