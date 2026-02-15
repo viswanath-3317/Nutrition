@@ -1,0 +1,131 @@
+import streamlit as st 
+import google.generativeai as genai 
+from dotenv import load_dotenv 
+import os 
+
+# Load environment variables 
+load_dotenv() 
+
+# Get API key 
+api_key = ("GOOGLE_API_KEY")
+
+# Configure Gemini 
+genai.configure(api_key=api_key) 
+
+# Create Model 
+model = genai.GenerativeModel("gemini-2.5-flash") 
+
+# Streamlit Page Config 
+st.set_page_config(page_title="Advanced Nutrition AI", layout="wide") 
+
+# Sidebar 
+st.sidebar.title("Nutrition AI Scenarios") 
+
+scenario = st.sidebar.radio( 
+    "Choose what you want to do:", 
+    ["Dynamic Nutritional Insights",  
+     "Tailored Meal Planning",  
+     "Virtual Nutrition Coach"] 
+) 
+
+# --------------------------------------------------- 
+# 1️⃣ Tailored Meal Planning 
+# --------------------------------------------------- 
+if scenario == "Tailored Meal Planning": 
+
+    st.title("🥗 Tailored Meal Planning") 
+
+    st.write("Provide your dietary details and preferences. Gemini AI will generate a meal plan.") 
+
+    col1, col2 = st.columns(2) 
+
+    with col1: 
+        dietary_restrictions = st.text_input("Dietary Restrictions or Allergies") 
+        health_conditions = st.text_input("Health Conditions") 
+
+    with col2: 
+        activity_level = st.selectbox( 
+            "Activity Level", 
+            ["Sedentary", "Moderately Active", "Very Active"] 
+        ) 
+
+        calorie_goal = st.number_input( 
+            "Daily Calorie Goal", 
+            min_value=1200, 
+            max_value=5000, 
+            value=2000 
+        ) 
+
+    if st.button("Generate Meal Plan"): 
+
+        prompt = f""" 
+        Create a personalized meal plan. 
+
+        Dietary Restrictions: {dietary_restrictions} 
+        Health Conditions: {health_conditions} 
+        Activity Level: {activity_level} 
+        Daily Calorie Goal: {calorie_goal} 
+
+        Provide: 
+        - Breakfast 
+        - Lunch 
+        - Dinner 
+        - Snacks 
+        Include estimated calories. 
+        """ 
+
+        response = model.generate_content(prompt) 
+
+        st.subheader("🍽️ Your Personalized Meal Plan") 
+        st.write(response.text) 
+
+
+# --------------------------------------------------- 
+# 2️⃣ Dynamic Nutritional Insights 
+# --------------------------------------------------- 
+elif scenario == "Dynamic Nutritional Insights": 
+
+    st.title("📊 Dynamic Nutritional Insights") 
+
+    food_input = st.text_area("Enter food items consumed today:") 
+
+    if st.button("Analyze Nutrition"): 
+
+        prompt = f""" 
+        Analyze the following food intake and provide: 
+        - Total calories 
+        - Macronutrient breakdown 
+        - Improvement suggestions 
+
+        Food consumed: 
+        {food_input} 
+        """ 
+
+        response = model.generate_content(prompt) 
+
+        st.subheader("📈 Nutrition Analysis") 
+        st.write(response.text) 
+
+
+# --------------------------------------------------- 
+# 3️⃣ Virtual Nutrition Coach 
+# --------------------------------------------------- 
+elif scenario == "Virtual Nutrition Coach": 
+
+    st.title("🤖 Virtual Nutrition Coach") 
+
+    user_question = st.text_area("Ask your nutrition question:") 
+
+    if st.button("Ask Coach"): 
+
+        prompt = f""" 
+        You are a certified nutrition coach. 
+        Answer the following question professionally: 
+
+        {user_question} 
+        """ 
+
+        response = model.generate_content(prompt) 
+
+        st.subheader("🧠 Coach Advice") 
+        st.write(response.text)
